@@ -24,9 +24,9 @@ async function fetchTasks() {
           Delete
         </button>
 
-        <button onclick="modifyTask(${task.id})">
-          Modify Task
-        </button>
+        <button onclick='modifyTask(${JSON.stringify(task)})'>
+  Modify Task
+</button>
       </div>
     `;
   });
@@ -79,14 +79,20 @@ async function deleteTask(id) {
 
   fetchTasks();
 }
+async function modifyTask(task) {
+  const newTitle = prompt(
+    "Modify title:",
+    task.title
+  );
 
-async function modifyTask(id) {
-  const newTitle = prompt("Enter new title:");
-  const newDescription = prompt("Enter new description:");
+  const newDescription = prompt(
+    "Modify description:",
+    task.description
+  );
 
   if (!newTitle) return;
 
-  await fetch(`${API}/${id}`, {
+  await fetch(`${API}/${task.id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json"
@@ -99,5 +105,4 @@ async function modifyTask(id) {
 
   fetchTasks();
 }
-
 fetchTasks();
