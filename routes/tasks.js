@@ -56,3 +56,22 @@ router.delete("/:id", (req, res) => {
 });
 
 module.exports = router;
+router.put("/:id", (req, res) => {
+  const { title, description } = req.body;
+
+  const sql = `
+    UPDATE tasks
+    SET title = ?, description = ?
+    WHERE id = ?
+  `;
+
+  db.query(sql, [title, description, req.params.id], (err) => {
+    if (err) {
+      return res.status(500).json(err);
+    }
+
+    res.json({
+      message: "Task updated successfully"
+    });
+  });
+});

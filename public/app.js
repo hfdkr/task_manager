@@ -10,14 +10,23 @@ async function fetchTasks() {
   tasks.forEach(task => {
     container.innerHTML += `
       <div class="task">
-        <h3 class="${task.completed ? "done" : ""}">${task.title}</h3>
+        <h3 class="${task.completed ? "done" : ""}">
+          ${task.title}
+        </h3>
+
         <p>${task.description || ""}</p>
 
         <button onclick="toggleTask(${task.id}, ${task.completed})">
           ${task.completed ? "Undo" : "Done"}
         </button>
 
-        <button onclick="deleteTask(${task.id})">Delete</button>
+        <button onclick="deleteTask(${task.id})">
+          Delete
+        </button>
+
+        <button onclick="modifyTask(${task.id})">
+          Modify Task
+        </button>
       </div>
     `;
   });
@@ -27,10 +36,20 @@ async function addTask() {
   const title = document.getElementById("title").value;
   const description = document.getElementById("description").value;
 
+  if (!title) {
+    alert("Please enter a title");
+    return;
+  }
+
   await fetch(API, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title, description })
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      title,
+      description
+    })
   });
 
   document.getElementById("title").value = "";
@@ -42,8 +61,12 @@ async function addTask() {
 async function toggleTask(id, completed) {
   await fetch(`${API}/${id}`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ completed: !completed })
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      completed: !completed
+    })
   });
 
   fetchTasks();
@@ -52,6 +75,26 @@ async function toggleTask(id, completed) {
 async function deleteTask(id) {
   await fetch(`${API}/${id}`, {
     method: "DELETE"
+  });
+
+  fetchTasks();
+}
+
+async function modifyTask(id) {
+  const newTitle = prompt("Enter new title:");
+  const newDescription = prompt("Enter new description:");
+
+  if (!newTitle) return;
+
+  await fetch(`${API}/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      title: newTitle,
+      description: newDescription
+    })
   });
 
   fetchTasks();
